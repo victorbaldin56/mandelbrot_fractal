@@ -7,7 +7,7 @@
 
 #include "mandelbrot.h"
 
-static unsigned mbrot_calculate_point_counter(float x_0, float y_0);
+static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0);
 
 void mbrot_calculate(unsigned width, unsigned height, unsigned* counters)
 {
@@ -22,7 +22,7 @@ void mbrot_calculate(unsigned width, unsigned height, unsigned* counters)
     }
 }
 
-static unsigned mbrot_calculate_point_counter(float x_0, float y_0)
+static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0)
 {
     unsigned counter = 0;
     float x_cur = x_0, y_cur = y_0;

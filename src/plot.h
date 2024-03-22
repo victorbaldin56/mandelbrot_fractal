@@ -56,7 +56,9 @@ inline void plot_create(Plot* plot, const char* name,
  * @param plot_name
  * @return 
  */
-bool mbrot_plot(Plot* plot, const unsigned* counters);
+void mbrot_plot(Plot* plot, const unsigned* counters);
+
+void mbrot_run(Plot* plot, unsigned* counters);
 
 inline void plot_destroy(Plot* plot)
 {

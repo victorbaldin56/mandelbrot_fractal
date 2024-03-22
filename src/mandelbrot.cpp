@@ -9,14 +9,15 @@
 
 static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0);
 
-void mbrot_calculate(unsigned width, unsigned height, unsigned* counters)
+void mbrot_calculate(unsigned width, unsigned height, unsigned* counters,
+                     float x_offset, float y_offset, float scale)
 {
     assert(width && height && counters != nullptr);
      
     for (unsigned y = 0; y < height; ++y) {
         for (unsigned x = 0; x < width; ++x) {
-            float x_0 = (float)x * mbrot_pixel_width - mbrot_x_offset;
-            float y_0 = (float)y * mbrot_pixel_width - mbrot_y_offset;
+            float x_0 = ((float)x * mbrot_pixel_width - x_offset) * scale;
+            float y_0 = ((float)y * mbrot_pixel_width - y_offset) * scale;
             counters[y * width + x] = mbrot_calculate_point_counter(x_0, y_0);
         }
     }

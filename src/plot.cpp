@@ -11,7 +11,54 @@
 
 static void mbrot_to_colors(Plot* plot, const unsigned* counters);
 
-bool mbrot_plot(Plot* plot, const unsigned* counters)
+void mbrot_run(Plot* plot, unsigned* counters)
+{   
+    assert(plot != nullptr && counters != nullptr);
+    
+    float x_offset = mbrot_x_offset;
+    float y_offset = mbrot_y_offset;
+    float scale = 1.0f;
+    
+    while (plot->window.isOpen()) {
+        mbrot_calculate(plot->width, plot->height, counters,
+                        x_offset, y_offset, scale);
+        mbrot_plot(plot, counters);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            x_offset += mbrot_x_step;
+            continue;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            x_offset -= mbrot_x_step;
+            continue;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            y_offset -= mbrot_y_step;
+            continue;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            y_offset += mbrot_y_step;
+            continue;
+        }
+        // TODO show zoom in window
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+            scale -= mbrot_scale_step;
+            continue;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+            scale += mbrot_scale_step;
+            continue;
+        }
+        
+        sf::Event event;
+        while (plot->window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                plot->window.close();
+        }
+    }
+}
+
+void mbrot_plot(Plot* plot, const unsigned* counters)
 {
     assert(plot != nullptr && counters != nullptr);
    
@@ -19,17 +66,7 @@ bool mbrot_plot(Plot* plot, const unsigned* counters)
     mbrot_to_colors(plot, counters);
     plot->texture.update(plot->colors);
     plot->window.draw(plot->sprite);
-    plot->window.display();
-    
-    while (plot->window.isOpen()) {
-        sf::Event event;
-        while (plot->window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                plot->window.close();
-        }
-    }
-
-    return true;
+    plot->window.display();   
 }
 
 static void mbrot_to_colors(Plot* plot, const unsigned* counters)

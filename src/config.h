@@ -18,6 +18,11 @@ const float mbrot_pixel_width = 0.0025f;
 const float mbrot_x_offset = 1.75f;
 const float mbrot_y_offset = 1.25f;
 
+const float mbrot_x_step = 0.1f;
+const float mbrot_y_step = 0.1f;
+
+const float mbrot_scale_step = 0.25f;
+
 const float mbrot_max_r2 = 100.0f;
 
 #endif // MANDELBROT_CONFIG_H_

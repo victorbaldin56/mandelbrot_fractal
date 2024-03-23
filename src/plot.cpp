@@ -11,7 +11,7 @@
 
 static void mbrot_to_colors(Plot* plot, const unsigned* counters);
 
-void mbrot_run(Plot* plot, unsigned* counters)
+void mbrot_render(Plot* plot, unsigned* counters)
 {   
     assert(plot != nullptr && counters != nullptr);
     

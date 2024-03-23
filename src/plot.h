@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "mandelbrot.h"
+#include "mandelbrot_dumb.h"
 
 const uint8_t red_coeff   = 15;
 const uint8_t green_coeff = 30;
@@ -58,7 +58,7 @@ inline void plot_create(Plot* plot, const char* name,
  */
 void mbrot_plot(Plot* plot, const unsigned* counters);
 
-void mbrot_run(Plot* plot, unsigned* counters);
+void mbrot_render(Plot* plot, unsigned* counters);
 
 inline void plot_destroy(Plot* plot)
 {

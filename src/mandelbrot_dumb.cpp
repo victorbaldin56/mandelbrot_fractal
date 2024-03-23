@@ -5,7 +5,7 @@
  * @copyright (C) Victor Baldin, 2024.
  *****************************************************************************/
 
-#include "mandelbrot.h"
+#include "mandelbrot_dumb.h"
 
 static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0);
 

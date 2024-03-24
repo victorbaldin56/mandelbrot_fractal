@@ -20,8 +20,8 @@ void mbrot_render(Plot* plot, unsigned* counters)
     float scale = 1.0f;
     
     while (plot->window.isOpen()) {
-        mbrot_calculate(plot->width, plot->height, counters,
-                        x_offset, y_offset, scale);
+        mbrot_calculate_avx(plot->width, plot->height, counters,
+                            x_offset, y_offset, scale);
         mbrot_plot(plot, counters);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -42,11 +42,11 @@ void mbrot_render(Plot* plot, unsigned* counters)
         }
         // TODO show zoom in window
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-            scale -= mbrot_scale_step;
+            scale *= mbrot_scale_step;
             continue;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-            scale += mbrot_scale_step;
+            scale /= mbrot_scale_step;
             continue;
         }
         

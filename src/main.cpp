@@ -51,9 +51,9 @@ enum RunMode {
 
 static inline int mbrot_run_mode(RunMode mode)
 {
-    unsigned* counters = (unsigned*)calloc(mbrot_screen_width 
-                                               * mbrot_screen_height,
-                                           sizeof(*counters));
+    unsigned* counters = (unsigned*)aligned_alloc(32, mbrot_screen_width
+                                                        * mbrot_screen_height
+                                                        * sizeof(*counters));
     if (counters == nullptr) {
         perror("");
         return EXIT_FAILURE;

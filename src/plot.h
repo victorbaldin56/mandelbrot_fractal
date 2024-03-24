@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "mandelbrot_dumb.h"
+#include "mandelbrot_avx.h"
 
 const uint8_t red_coeff   = 15;
 const uint8_t green_coeff = 30;

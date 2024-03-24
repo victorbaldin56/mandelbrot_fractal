@@ -15,11 +15,11 @@ const unsigned mbrot_screen_width  = 1024u;
 
 const float mbrot_pixel_width = 0.0025f;
 
-const float mbrot_x_offset = 1.75f;
-const float mbrot_y_offset = 1.25f;
+const float mbrot_x_offset = mbrot_screen_width * mbrot_pixel_width / 2;
+const float mbrot_y_offset = mbrot_screen_height * mbrot_pixel_width / 2;
 
-const float mbrot_x_step = 0.1f;
-const float mbrot_y_step = 0.1f;
+const float mbrot_x_step = 1.1f;
+const float mbrot_y_step = 1.1f;
 
 const float mbrot_scale_step = 0.25f;
 

@@ -14,8 +14,13 @@
 #include "mandelbrot_dumb.h"
 #include "plot.h"
 
+const int num_calculations = 100;
+
 const char help_message[] = "Mandelbrot fractal simulation\n"
                             "Usage:...";
+
+typedef void MbrotCalculationFunc(unsigned width, unsigned height, unsigned* counters,
+                                  float x_offset, float y_offset, float scale);
 
 static inline void print_help() {
     puts(help_message);
@@ -30,18 +35,41 @@ static void mbrot_run(unsigned* counters)
     plot_destroy(&plot);
 }   
 
-static void mbrot_run_benchmark(unsigned* counters)
+static inline double get_time(timeval start, timeval stop)
 {
+    return (double)(stop.tv_sec - start.tv_sec) 
+                + (double)(stop.tv_usec - start.tv_usec) / 1e6;
+}
+
+static void mbrot_test_calculation_func(unsigned* counters,
+                                        MbrotCalculationFunc* func, 
+                                        const char* func_name)
+{
+    assert(counters != nullptr && func != nullptr && output != nullptr
+            && func_name != nullptr);
+    
     timeval start = {}, stop = {};
     gettimeofday(&start, nullptr);
-    for (int i = 0; i < 10; ++i) {
-        mbrot_calculate(mbrot_screen_width, mbrot_screen_height, counters,
-                         mbrot_x_offset, mbrot_y_offset, 1.0f);
+    
+    fprintf(stderr, "==========================================================\n"
+                    "Testing %s implementation... ", func_name);
+    for (int i = 0; i < num_calculations; ++i) {
+        (*func)(mbrot_screen_width, mbrot_screen_height, counters,
+                mbrot_x_offset, mbrot_y_offset, 1.0f);
     }
     gettimeofday(&stop, nullptr);
-    double time = (double)(stop.tv_sec - start.tv_sec) 
-                    + (double)(stop.tv_usec - start.tv_usec) / 1e6;
-    printf("Duration of 100 calculations: %lf\n", time);
+    double time = get_time(start, stop);
+    fprintf(stderr, "OK\n"
+                    "Time of %d calculations: %lf s\n",
+                    num_calculations, time); 
+}
+
+static void mbrot_run_benchmark(unsigned* counters)
+{
+    assert(filename != nullptr);
+    
+    mbrot_test_calculation_func(counters, mbrot_calculate, "dumb");
+    mbrot_test_calculation_func(counters, mbrot_calculate_avx, "AVX2");
 }
 
 enum RunMode {

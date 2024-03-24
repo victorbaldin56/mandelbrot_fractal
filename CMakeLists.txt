@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 project(mandelbrot)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_GENERATOR "Ninja Multiconfig")
+set(CMAKE_GENERATOR "Ninja")
 
 set(CMAKE_CXX_FLAGS "-mavx2 -std=c++17 -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations\
                     -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual\
@@ -23,8 +23,20 @@ if (${DEBUG})
                     -fsized-deallocation -fstack-check -fstack-protector\
 -O0 -D _DEBUG -ggdb3 -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,nonnull-attribute,leak,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr")
 else ()
-    string(APPEND CMAKE_CXX_FLAGS "-DNDEBUG")
+    string(APPEND CMAKE_CXX_FLAGS "-DNDEBUG ")
+endif ()
+
+if (${O0})
+    string(APPEND CMAKE_CXX_FLAGS "-O0")
 endif ()
     
+if (${O3})
+    string(APPEND CMAKE_CXX_FLAGS "-O3")
+endif ()
+
+if (${Ofast})
+    string(APPEND CMAKE_CXX_FLAGS "-Ofast -march=native")
+endif()
+
 add_executable(mandelbrot src/main.cpp src/plot.cpp src/mandelbrot_dumb.cpp src/mandelbrot_avx.cpp)
 target_link_libraries(mandelbrot sfml-graphics sfml-window sfml-system)

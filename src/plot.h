@@ -35,18 +35,7 @@ struct Pixel {
     uint8_t alpha;
 };
 
-inline void plot_create(Plot* plot, const char* name, 
-                        unsigned width, unsigned height)
-{
-    assert(plot != nullptr);
-    
-    plot->window.create(sf::VideoMode(width, height), name);
-    plot->texture.create(width, height);
-    plot->sprite.setTexture(plot->texture);
-    plot->colors = (uint8_t*)calloc(width * height * 4, sizeof(*plot->colors));
-    plot->width = width;
-    plot->height = height;
-}
+void plot_create(Plot* plot, const char* name, unsigned width, unsigned height);
 
 /**
  * @brief

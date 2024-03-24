@@ -11,6 +11,19 @@
 
 static void mbrot_to_colors(Plot* plot, const unsigned* counters);
 
+void plot_create(Plot* plot, const char* name, 
+                        unsigned width, unsigned height)
+{
+    assert(plot != nullptr);
+    
+    plot->window.create(sf::VideoMode(width, height), name);
+    plot->texture.create(width, height);
+    plot->sprite.setTexture(plot->texture);
+    plot->colors = (uint8_t*)calloc(width * height * 4, sizeof(*plot->colors));
+    plot->width = width;
+    plot->height = height;
+}
+
 void mbrot_render(Plot* plot, unsigned* counters)
 {   
     assert(plot != nullptr && counters != nullptr);

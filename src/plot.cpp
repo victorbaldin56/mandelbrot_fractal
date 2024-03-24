@@ -36,7 +36,8 @@ void mbrot_render(Plot* plot, unsigned* counters)
         mbrot_calculate_avx(plot->width, plot->height, counters,
                             x_offset, y_offset, scale);
         mbrot_plot(plot, counters);
-
+    
+    no_render:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             x_offset += mbrot_x_step;
             continue;
@@ -55,19 +56,23 @@ void mbrot_render(Plot* plot, unsigned* counters)
         }
         // TODO show zoom in window
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-            scale *= mbrot_scale_step;
+            scale /= mbrot_scale_step;
             continue;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-            scale /= mbrot_scale_step;
+            scale *= mbrot_scale_step;
             continue;
         }
         
         sf::Event event;
         while (plot->window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 plot->window.close();
+                return;
+            }
         }
+        
+        goto no_render; // FIXME
     }
 }
 

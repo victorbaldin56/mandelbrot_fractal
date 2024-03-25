@@ -28,12 +28,16 @@ static inline void print_help() {
 
 static void mf_run(unsigned* counters)
 {
-    Plot plot = {}; 
-    if (!plot_create(&plot, "Mandelbrot set", mf_screen_width, 
-                mf_screen_height))
-        fprintf(stderr, "loading font failed\n");
-    mf_window(&plot, counters);
-    plot_destroy(&plot);
+    SfmlGui plot = {};
+    SfmlGuiText text = {.font_name = "Consolas",
+                        .color = sf::Color::Green,
+                        .font_size = 20};
+    if (!sfml_gui_create(&plot, "Mandelbrot set", mf_screen_width, 
+                mf_screen_height, text))
+        return;
+
+    mf_handle_window(&plot, counters);
+    sfml_gui_destroy(&plot);
 }   
 
 static void mf_test_calculation_func(unsigned* counters,

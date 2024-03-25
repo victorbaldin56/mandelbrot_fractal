@@ -1,0 +1,3 @@
+[submodule "sfml_wrapper"]
+	path = sfml_wrapper
+	url = https://github.com/victorbaldin56/sfml_wrapper

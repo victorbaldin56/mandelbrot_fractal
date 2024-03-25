@@ -10,55 +10,16 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#include <fontconfig/fontconfig.h>
+static void mf_to_colors(SfmlGui* plot, const unsigned* counters);
 
-static void mf_to_colors(Plot* plot, const unsigned* counters);
-
-bool plot_create(Plot* plot, const char* name, 
-                        unsigned width, unsigned height)
-{
-    assert(plot != nullptr);
-    
-    plot->window.create(sf::VideoMode(width, height), name);
-    plot->texture.create(width, height);
-    plot->sprite.setTexture(plot->texture);
-    plot->colors = (uint8_t*)calloc(width * height * 4, sizeof(*plot->colors));
-    plot->width = width;
-    plot->height = height;
-    plot->text.setCharacterSize(20);
-    plot->text.setFillColor(sf::Color::Green);
-    
-    // TODO: separate lib
-    FcConfig* config = FcInitLoadConfigAndFonts();
-    FcPattern* pat = FcNameParse((const FcChar8*)"Consolas");
-    FcConfigSubstitute(config, pat, FcMatchPattern);
-    FcDefaultSubstitute(pat);
-    
-    FcResult res;
-    FcPattern* font = FcFontMatch(config, pat, &res);
-    if (font != nullptr) {
-        FcChar8* file = nullptr;
-        if (FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch) {
-            if (!plot->font.loadFromFile((char*)file))
-                return false;
-        }
-    }
-    
-    FcPatternDestroy(pat);
-    FcPatternDestroy(font);
-    
-    plot->text.setFont(plot->font);
-    return true;
-}
-
-static void mf_render(Plot* plot, unsigned* counters,
+static void mf_render(SfmlGui* plot, unsigned* counters,
                          float x_offset, float y_offset, float scale)
 {
     timeval start = {}, stop = {};
     gettimeofday(&start, nullptr);
     mf_calculate_avx(plot->width, plot->height, counters,
                         x_offset, y_offset, scale);
-    mf_plot(plot, counters);
+    mf_draw_plot(plot, counters);
     gettimeofday(&stop, nullptr);
     int fps = (int)(1 / get_time(start, stop));
     
@@ -67,7 +28,7 @@ static void mf_render(Plot* plot, unsigned* counters,
     plot->text.setString(buf);
 }  
 
-void mf_window(Plot* plot, unsigned* counters)
+void mf_handle_window(SfmlGui* plot, unsigned* counters)
 {   
     assert(plot != nullptr && counters != nullptr);
     
@@ -123,7 +84,7 @@ render:
     }
 }
 
-void mf_plot(Plot* plot, const unsigned* counters)
+void mf_draw_plot(SfmlGui* plot, const unsigned* counters)
 {
     assert(plot != nullptr && counters != nullptr);
    
@@ -135,12 +96,12 @@ void mf_plot(Plot* plot, const unsigned* counters)
     plot->window.display();   
 }
 
-static void mf_to_colors(Plot* plot, const unsigned* counters)
+static void mf_to_colors(SfmlGui* plot, const unsigned* counters)
 {
     assert(plot != nullptr);
     
     for (size_t i = 0; i < plot->width * plot->height; ++i) {
-        ((Pixel*)plot->colors)[i] = {.red   = (uint8_t)(counters[i] * red_coeff % 256),
+        ((RgbaPixel*)plot->colors)[i] = {.red   = (uint8_t)(counters[i] * red_coeff % 256),
                                      .green = (uint8_t)(counters[i] * green_coeff % 256),
                                      .blue  = (uint8_t)(counters[i] * blue_coeff % 256),
                                      .alpha = 0xff};

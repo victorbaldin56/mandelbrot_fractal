@@ -26,6 +26,8 @@ struct Plot {
     
     unsigned width;
     unsigned height;
+    
+    ~Plot() {};
 };
 
 struct Pixel {

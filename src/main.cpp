@@ -51,8 +51,7 @@ static void mbrot_test_calculation_func(unsigned* counters,
     timeval start = {}, stop = {};
     gettimeofday(&start, nullptr);
     
-    fprintf(stderr, "==========================================================\n"
-                    "Testing %s implementation... ", func_name);
+    fprintf(stderr, "Testing %s implementation... ", func_name);
     for (int i = 0; i < num_calculations; ++i) {
         (*func)(mbrot_screen_width, mbrot_screen_height, counters,
                 mbrot_x_offset, mbrot_y_offset, 1.0f);
@@ -112,6 +111,8 @@ int main(int argc, char** argv)
             print_help();
             return 0;
         case 't':
+	        fprintf(stderr, "-----------------------------------------------------------\n"
+                   "%s\n", argv[0]);
             return mbrot_run_mode(run_test);
         case '?':
             print_help();
@@ -123,3 +124,4 @@ int main(int argc, char** argv)
     
     return mbrot_run_mode(run_regular);
 }
+

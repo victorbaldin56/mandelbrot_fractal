@@ -21,7 +21,9 @@ struct Plot {
     sf::RenderWindow window;
     sf::Texture texture;
     sf::Sprite sprite;
-    
+    sf::Text text;
+    sf::Font font;
+        
     uint8_t* colors;
     
     unsigned width;
@@ -37,7 +39,7 @@ struct Pixel {
     uint8_t alpha;
 };
 
-void plot_create(Plot* plot, const char* name, unsigned width, unsigned height);
+bool plot_create(Plot* plot, const char* name, unsigned width, unsigned height);
 
 /**
  * @brief
@@ -50,7 +52,7 @@ void plot_create(Plot* plot, const char* name, unsigned width, unsigned height);
  */
 void mbrot_plot(Plot* plot, const unsigned* counters);
 
-void mbrot_render(Plot* plot, unsigned* counters);
+void mbrot_window(Plot* plot, unsigned* counters);
 
 inline void plot_destroy(Plot* plot)
 {

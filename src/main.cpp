@@ -29,17 +29,12 @@ static inline void print_help() {
 static void mbrot_run(unsigned* counters)
 {
     Plot plot = {}; 
-    plot_create(&plot, "Mandelbrot set", mbrot_screen_width, 
-                mbrot_screen_height);
-    mbrot_render(&plot, counters);
+    if (!plot_create(&plot, "Mandelbrot set", mbrot_screen_width, 
+                mbrot_screen_height))
+        fprintf(stderr, "loading font failed\n");
+    mbrot_window(&plot, counters);
     plot_destroy(&plot);
 }   
-
-static inline double get_time(timeval start, timeval stop)
-{
-    return (double)(stop.tv_sec - start.tv_sec) 
-                + (double)(stop.tv_usec - start.tv_usec) / 1e6;
-}
 
 static void mbrot_test_calculation_func(unsigned* counters,
                                         MbrotCalculationFunc* func, 

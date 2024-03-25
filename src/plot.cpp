@@ -8,10 +8,11 @@
 #include "plot.h"
 
 #include <stdlib.h>
+#include <sys/time.h>
 
 static void mbrot_to_colors(Plot* plot, const unsigned* counters);
 
-void plot_create(Plot* plot, const char* name, 
+bool plot_create(Plot* plot, const char* name, 
                         unsigned width, unsigned height)
 {
     assert(plot != nullptr);
@@ -22,9 +23,34 @@ void plot_create(Plot* plot, const char* name,
     plot->colors = (uint8_t*)calloc(width * height * 4, sizeof(*plot->colors));
     plot->width = width;
     plot->height = height;
+    plot->text.setCharacterSize(20);
+    plot->text.setFillColor(sf::Color::Green);
+    
+    // FIXME
+    if (!plot->font.loadFromFile("OpenSans-Regular.ttf"))
+        return false;
+   
+    plot->text.setFont(plot->font);
+    return true;
 }
 
-void mbrot_render(Plot* plot, unsigned* counters)
+static void mbrot_render(Plot* plot, unsigned* counters,
+                         float x_offset, float y_offset, float scale)
+{
+    timeval start = {}, stop = {};
+    gettimeofday(&start, nullptr);
+    mbrot_calculate_avx(plot->width, plot->height, counters,
+                        x_offset, y_offset, scale);
+    mbrot_plot(plot, counters);
+    gettimeofday(&stop, nullptr);
+    int fps = (int)(1 / get_time(start, stop));
+    
+    char buf[100] = "";
+    snprintf(buf, sizeof(buf), "FPS: %d", fps);
+    plot->text.setString(buf);
+}  
+
+void mbrot_window(Plot* plot, unsigned* counters)
 {   
     assert(plot != nullptr && counters != nullptr);
     
@@ -32,36 +58,34 @@ void mbrot_render(Plot* plot, unsigned* counters)
     float y_offset = mbrot_y_offset;
     float scale = 1.0f;
     
-    while (plot->window.isOpen()) {
-        mbrot_calculate_avx(plot->width, plot->height, counters,
-                            x_offset, y_offset, scale);
-        mbrot_plot(plot, counters);
+render:
+    mbrot_render(plot, counters, x_offset, y_offset, scale);
     
-    no_render:
+    while (plot->window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             x_offset += mbrot_x_step;
-            continue;
+            goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             x_offset -= mbrot_x_step;
-            continue;
+            goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
             y_offset -= mbrot_y_step;
-            continue;
+            goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             y_offset += mbrot_y_step;
-            continue;
+            goto render;
         }
         // TODO show zoom in window
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
             scale /= mbrot_scale_step;
-            continue;
+            goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
             scale *= mbrot_scale_step;
-            continue;
+            goto render;
         }
         
         sf::Event event;
@@ -69,10 +93,13 @@ void mbrot_render(Plot* plot, unsigned* counters)
             if (event.type == sf::Event::Closed) {
                 plot->window.close();
                 return;
+            } 
+            if (event.type == sf::Event::MouseWheelScrolled) {
+                (event.mouseWheelScroll.delta > 0) ? 
+                    scale /= mbrot_scale_step : scale *= mbrot_scale_step;
+                goto render;
             }
         }
-        
-        goto no_render; // FIXME
     }
 }
 
@@ -84,6 +111,7 @@ void mbrot_plot(Plot* plot, const unsigned* counters)
     mbrot_to_colors(plot, counters);
     plot->texture.update(plot->colors);
     plot->window.draw(plot->sprite);
+    plot->window.draw(plot->text);
     plot->window.display();   
 }
 

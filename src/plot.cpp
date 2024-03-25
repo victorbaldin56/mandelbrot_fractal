@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
+#include <fontconfig/fontconfig.h>
+
 static void mf_to_colors(Plot* plot, const unsigned* counters);
 
 bool plot_create(Plot* plot, const char* name, 
@@ -26,10 +28,25 @@ bool plot_create(Plot* plot, const char* name,
     plot->text.setCharacterSize(20);
     plot->text.setFillColor(sf::Color::Green);
     
-    // FIXME
-    if (!plot->font.loadFromFile("OpenSans-Regular.ttf"))
-        return false;
-   
+    // TODO: separate lib
+    FcConfig* config = FcInitLoadConfigAndFonts();
+    FcPattern* pat = FcNameParse((const FcChar8*)"Consolas");
+    FcConfigSubstitute(config, pat, FcMatchPattern);
+    FcDefaultSubstitute(pat);
+    
+    FcResult res;
+    FcPattern* font = FcFontMatch(config, pat, &res);
+    if (font != nullptr) {
+        FcChar8* file = nullptr;
+        if (FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch) {
+            if (!plot->font.loadFromFile((char*)file))
+                return false;
+        }
+    }
+    
+    FcPatternDestroy(pat);
+    FcPatternDestroy(font);
+    
     plot->text.setFont(plot->font);
     return true;
 }

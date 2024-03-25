@@ -20,4 +20,4 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -mavx2 -std=c++17 -Wall -Wextra -Weffc++ -Waggres
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -mavx2")
 
 add_executable(mandelbrot src/main.cpp src/plot.cpp src/mandelbrot_dumb.cpp src/mandelbrot_avx.cpp)
-target_link_libraries(mandelbrot sfml-graphics sfml-window sfml-system)
+target_link_libraries(mandelbrot sfml-graphics sfml-window sfml-system fontconfig)

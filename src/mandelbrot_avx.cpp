@@ -24,12 +24,12 @@
 #endif
 
 const __m256 vector_x_offsets = _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0) 
-                                    * mbrot_pixel_width;
-const __m256 max_r2_vector = _mm256_set1_ps(mbrot_max_r2);
+                                    * mf_pixel_width;
+const __m256 max_r2_vector = _mm256_set1_ps(mf_max_r2);
 
 static inline __m256i calculate_counters_vector(__m256 x_0, __m256 y_0);
 
-void mbrot_calculate_avx(unsigned width, unsigned height, unsigned* counters,
+void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
                          float x_offset, float y_offset, float scale)
 {
     assert(width && height && counters != nullptr);
@@ -37,10 +37,10 @@ void mbrot_calculate_avx(unsigned width, unsigned height, unsigned* counters,
 
     for (unsigned y = 0; y < height; ++y) {
         for (unsigned x = 0; x < width; x += 8) {
-            __m256 x_0 = _mm256_set1_ps(((float)x * mbrot_pixel_width 
+            __m256 x_0 = _mm256_set1_ps(((float)x * mf_pixel_width 
                                             - x_offset) * scale);
             x_0 += vector_x_offsets * scale;
-            __m256 y_0 = _mm256_set1_ps(((float)y * mbrot_pixel_width
+            __m256 y_0 = _mm256_set1_ps(((float)y * mf_pixel_width
                                             - y_offset) * scale);
             
             // Here right alignment is guaranteed by assert.
@@ -66,7 +66,7 @@ static inline __m256i calculate_counters_vector(__m256 x_0, __m256 y_0)
     __m256i counters = {};
     __m256 x_cur = x_0, y_cur = y_0;
     
-    for (unsigned i = 0; i < mbrot_num_iterations; ++i) {
+    for (unsigned i = 0; i < mf_num_iterations; ++i) {
         __m256 x2 = x_cur * x_cur, y2 = y_cur * y_cur;
         __m256i cmp = (__m256i)_mm256_cmp_ps(x2 + y2, max_r2_vector,
                                              _CMP_LE_OQ);

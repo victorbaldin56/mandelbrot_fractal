@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-static void mbrot_to_colors(Plot* plot, const unsigned* counters);
+static void mf_to_colors(Plot* plot, const unsigned* counters);
 
 bool plot_create(Plot* plot, const char* name, 
                         unsigned width, unsigned height)
@@ -34,14 +34,14 @@ bool plot_create(Plot* plot, const char* name,
     return true;
 }
 
-static void mbrot_render(Plot* plot, unsigned* counters,
+static void mf_render(Plot* plot, unsigned* counters,
                          float x_offset, float y_offset, float scale)
 {
     timeval start = {}, stop = {};
     gettimeofday(&start, nullptr);
-    mbrot_calculate_avx(plot->width, plot->height, counters,
+    mf_calculate_avx(plot->width, plot->height, counters,
                         x_offset, y_offset, scale);
-    mbrot_plot(plot, counters);
+    mf_plot(plot, counters);
     gettimeofday(&stop, nullptr);
     int fps = (int)(1 / get_time(start, stop));
     
@@ -50,41 +50,44 @@ static void mbrot_render(Plot* plot, unsigned* counters,
     plot->text.setString(buf);
 }  
 
-void mbrot_window(Plot* plot, unsigned* counters)
+void mf_window(Plot* plot, unsigned* counters)
 {   
     assert(plot != nullptr && counters != nullptr);
     
-    float x_offset = mbrot_x_offset;
-    float y_offset = mbrot_y_offset;
+    float x_offset = mf_x_offset;
+    float y_offset = mf_y_offset;
     float scale = 1.0f;
     
+    // REVIEW 
 render:
-    mbrot_render(plot, counters, x_offset, y_offset, scale);
+    mf_render(plot, counters, x_offset, y_offset, scale);
     
     while (plot->window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            x_offset += mbrot_x_step;
+            x_offset += mf_x_step;
             goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            x_offset -= mbrot_x_step;
+            x_offset -= mf_x_step;
             goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            y_offset -= mbrot_y_step;
+            y_offset -= mf_y_step;
             goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            y_offset += mbrot_y_step;
+            y_offset += mf_y_step;
             goto render;
         }
-        // TODO show zoom in window
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-            scale /= mbrot_scale_step;
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Equal) 
+            && sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+            || sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+            scale /= mf_scale_step;
             goto render;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-            scale *= mbrot_scale_step;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Hyphen) 
+            || sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+            scale *= mf_scale_step;
             goto render;
         }
         
@@ -96,26 +99,26 @@ render:
             } 
             if (event.type == sf::Event::MouseWheelScrolled) {
                 (event.mouseWheelScroll.delta > 0) ? 
-                    scale /= mbrot_scale_step : scale *= mbrot_scale_step;
+                    scale /= mf_scale_step : scale *= mf_scale_step;
                 goto render;
             }
         }
     }
 }
 
-void mbrot_plot(Plot* plot, const unsigned* counters)
+void mf_plot(Plot* plot, const unsigned* counters)
 {
     assert(plot != nullptr && counters != nullptr);
    
     plot->window.clear();
-    mbrot_to_colors(plot, counters);
+    mf_to_colors(plot, counters);
     plot->texture.update(plot->colors);
     plot->window.draw(plot->sprite);
     plot->window.draw(plot->text);
     plot->window.display();   
 }
 
-static void mbrot_to_colors(Plot* plot, const unsigned* counters)
+static void mf_to_colors(Plot* plot, const unsigned* counters)
 {
     assert(plot != nullptr);
     

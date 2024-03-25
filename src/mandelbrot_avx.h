@@ -17,7 +17,7 @@
  * @param height
  * @param counters
  */
-void mbrot_calculate_avx(unsigned width, unsigned height, unsigned* counters,
+void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
                          float x_offset, float y_offset, float scale);
 
 static inline double get_time(timeval start, timeval stop)

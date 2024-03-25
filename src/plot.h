@@ -50,9 +50,9 @@ bool plot_create(Plot* plot, const char* name, unsigned width, unsigned height);
  * @param plot_name
  * @return 
  */
-void mbrot_plot(Plot* plot, const unsigned* counters);
+void mf_plot(Plot* plot, const unsigned* counters);
 
-void mbrot_window(Plot* plot, unsigned* counters);
+void mf_window(Plot* plot, unsigned* counters);
 
 inline void plot_destroy(Plot* plot)
 {

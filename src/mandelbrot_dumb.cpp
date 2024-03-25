@@ -7,30 +7,30 @@
 
 #include "mandelbrot_dumb.h"
 
-static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0);
+static inline unsigned mf_calculate_point_counter(float x_0, float y_0);
 
-void mbrot_calculate(unsigned width, unsigned height, unsigned* counters,
+void mf_calculate(unsigned width, unsigned height, unsigned* counters,
                      float x_offset, float y_offset, float scale)
 {
     assert(width && height && counters != nullptr);
      
     for (unsigned y = 0; y < height; ++y) {
         for (unsigned x = 0; x < width; ++x) {
-            float x_0 = ((float)x * mbrot_pixel_width - x_offset) * scale;
-            float y_0 = ((float)y * mbrot_pixel_width - y_offset) * scale;
-            counters[y * width + x] = mbrot_calculate_point_counter(x_0, y_0);
+            float x_0 = ((float)x * mf_pixel_width - x_offset) * scale;
+            float y_0 = ((float)y * mf_pixel_width - y_offset) * scale;
+            counters[y * width + x] = mf_calculate_point_counter(x_0, y_0);
         }
     }
 }
 
-static inline unsigned mbrot_calculate_point_counter(float x_0, float y_0)
+static inline unsigned mf_calculate_point_counter(float x_0, float y_0)
 {
     unsigned counter = 0;
     float x_cur = x_0, y_cur = y_0;
     
-    for (; counter < mbrot_num_iterations; ++counter) {
+    for (; counter < mf_num_iterations; ++counter) {
         float x2 = x_cur * x_cur, y2 = y_cur * y_cur;
-        if (x2 + y2 > mbrot_max_r2)
+        if (x2 + y2 > mf_max_r2)
             break; 
 
         float x_next = x2 - y2 + x_0;

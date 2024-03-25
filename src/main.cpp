@@ -19,28 +19,28 @@ const int num_calculations = 100;
 const char help_message[] = "Mandelbrot fractal simulation\n"
                             "Usage:...";
 
-typedef void MbrotCalculationFunc(unsigned width, unsigned height, unsigned* counters,
+typedef void MFCalculationfunc(unsigned width, unsigned height, unsigned* counters,
                                   float x_offset, float y_offset, float scale);
 
 static inline void print_help() {
     puts(help_message);
 }
 
-static void mbrot_run(unsigned* counters)
+static void mf_run(unsigned* counters)
 {
     Plot plot = {}; 
-    if (!plot_create(&plot, "Mandelbrot set", mbrot_screen_width, 
-                mbrot_screen_height))
+    if (!plot_create(&plot, "Mandelbrot set", mf_screen_width, 
+                mf_screen_height))
         fprintf(stderr, "loading font failed\n");
-    mbrot_window(&plot, counters);
+    mf_window(&plot, counters);
     plot_destroy(&plot);
 }   
 
-static void mbrot_test_calculation_func(unsigned* counters,
-                                        MbrotCalculationFunc* func, 
+static void mf_test_calculation_func(unsigned* counters,
+                                        MFCalculationfunc* func, 
                                         const char* func_name)
 {
-    assert(counters != nullptr && func != nullptr && output != nullptr
+    assert(counters != nullptr && func != nullptr
             && func_name != nullptr);
     
     timeval start = {}, stop = {};
@@ -48,8 +48,8 @@ static void mbrot_test_calculation_func(unsigned* counters,
     
     fprintf(stderr, "Testing %s implementation... ", func_name);
     for (int i = 0; i < num_calculations; ++i) {
-        (*func)(mbrot_screen_width, mbrot_screen_height, counters,
-                mbrot_x_offset, mbrot_y_offset, 1.0f);
+        (*func)(mf_screen_width, mf_screen_height, counters,
+                mf_x_offset, mf_y_offset, 1.0f);
     }
     gettimeofday(&stop, nullptr);
     double time = get_time(start, stop);
@@ -58,12 +58,11 @@ static void mbrot_test_calculation_func(unsigned* counters,
                     num_calculations, time); 
 }
 
-static void mbrot_run_benchmark(unsigned* counters)
+static void mf_run_benchmark(unsigned* counters)
 {
-    assert(filename != nullptr);
-    
-    mbrot_test_calculation_func(counters, mbrot_calculate, "dumb");
-    mbrot_test_calculation_func(counters, mbrot_calculate_avx, "AVX2");
+    assert(counters != nullptr);
+    mf_test_calculation_func(counters, mf_calculate, "dumb");
+    mf_test_calculation_func(counters, mf_calculate_avx, "AVX2");
 }
 
 enum RunMode {
@@ -71,10 +70,10 @@ enum RunMode {
     run_test    = 1,
 };
 
-static inline int mbrot_run_mode(RunMode mode)
+static inline int mf_run_mode(RunMode mode)
 {
-    unsigned* counters = (unsigned*)aligned_alloc(32, mbrot_screen_width
-                                                        * mbrot_screen_height
+    unsigned* counters = (unsigned*)aligned_alloc(32, mf_screen_width
+                                                        * mf_screen_height
                                                         * sizeof(*counters));
     if (counters == nullptr) {
         perror("");
@@ -82,9 +81,9 @@ static inline int mbrot_run_mode(RunMode mode)
     }
     
     if (mode == run_test)
-        mbrot_run_benchmark(counters);
+        mf_run_benchmark(counters);
     else
-        mbrot_run(counters);
+        mf_run(counters);
     
     free(counters);
     return 0;
@@ -106,9 +105,7 @@ int main(int argc, char** argv)
             print_help();
             return 0;
         case 't':
-	        fprintf(stderr, "-----------------------------------------------------------\n"
-                   "%s\n", argv[0]);
-            return mbrot_run_mode(run_test);
+            return mf_run_mode(run_test);
         case '?':
             print_help();
             return EXIT_FAILURE;
@@ -117,6 +114,6 @@ int main(int argc, char** argv)
         }                           
     }
     
-    return mbrot_run_mode(run_regular);
+    return mf_run_mode(run_regular);
 }
 

@@ -30,7 +30,7 @@ const __m256 max_r2_vector = _mm256_set1_ps(mf_max_r2);
 static inline __m256i calculate_counters_vector(__m256 x_0, __m256 y_0);
 
 void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
-                         float x_offset, float y_offset, float scale)
+                      float x_offset, float y_offset, float scale)
 {
     assert(width && height && counters != nullptr);
     assert((uintptr_t)counters % 32 == 0 && "Wrong alignment");

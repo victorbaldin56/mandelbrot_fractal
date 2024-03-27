@@ -22,13 +22,11 @@ const uint8_t blue_coeff  = 40;
 /**
  * @brief
  * 
- * @param width
- * @param height
- * @param counters
- * @param plot_name
- * @return 
+ * @param plot     A workspace to render in.
+ * @param counters Array of each point's counters. 
  */
 void mf_draw_plot(SfmlGui* plot, const unsigned* counters);
+
 
 void mf_handle_window(SfmlGui* plot, unsigned* counters);
 

@@ -16,9 +16,12 @@
  * @param widht
  * @param height
  * @param counters
+ * @param x_offset
+ * @param y_offset
+ * @param scale
  */
 void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
-                         float x_offset, float y_offset, float scale);
+                      float x_offset, float y_offset, float scale);
 
 static inline double get_time(timeval start, timeval stop)
 {

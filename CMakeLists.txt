@@ -15,9 +15,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -mavx2 -std=c++17 -Wall -Wextra -Weffc++ -Waggres
                     -Wsync-nand -Wundef -Wunreachable-code -Wunused -Wuseless-cast -Wvariadic-macros\
                     -Wno-literal-suffix -Wno-missing-field-initializers -Wno-narrowing\
                     -Wno-old-style-cast -Wno-varargs -Wstack-protector -fstrict-overflow\
-                    -fno-omit-frame-pointer -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE ") 
+                    -fno-omit-frame-pointer -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE -D _DEBUG\
+                    -ggdb3") 
 
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -mavx2")
+set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -Ofast -march=native -mavx2 -std=c++17 -Wall")
 
-add_executable(mandelbrot src/main.cpp src/plot.cpp src/mandelbrot_dumb.cpp src/mandelbrot_avx.cpp)
+add_executable(mandelbrot src/main.cpp src/plot.cpp src/mandelbrot_dumb.cpp src/mandelbrot_avx.cpp
+               src/performance_test.cpp)
 target_link_libraries(mandelbrot sfml-graphics sfml-window sfml-system fontconfig)

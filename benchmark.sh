@@ -1,10 +1,20 @@
 #!/bin/bash
 
-LOG=data.log
+CSV_DIR=logs/
+DEBUG_BINARY=Debug/mandelbrot
+RELEASE_BINARY=Release/mandelbrot
+DEBUG_OUTPUT=no_optimization.csv
+RELEASE_OUTPUT=with_optimization.csv
 
-BINARY=mandelbrot
+mkdir -p $CSV_DIR
+cd Debug/
+ninja
+cd ../Release
+ninja
+cd ..
 
-echo "With -O0:">>$LOG
-"Debug/$BINARY" -t 2>>$LOG
-echo "With -Ofast -march=native:">>$LOG
-"Release/$BINARY" -t 2>>$LOG
+sudo cpupower frequency-set -g performance
+$DEBUG_BINARY -t $CSV_DIR/$DEBUG_OUTPUT
+$RELEASE_BINARY -t $CSV_DIR/$RELEASE_OUTPUT
+
+python3 plot.py

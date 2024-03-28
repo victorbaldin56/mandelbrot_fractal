@@ -48,15 +48,7 @@ void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
 #pragma GCC diagnostic ignored "-Wcast-align"
             _mm256_store_si256((__m256i*)(counters + y * width + x),
                                calculate_counters_vector(x_0, y_0));
-#pragma GCC diagnostic pop
-            
-            // Very dumb and slow log, do not turn it on again!
-#ifdef DEBUG
-            for (unsigned i = 0; i < 8; ++i) {
-                fprintf(stderr, "%x ", counters[y * width + x + i]);
-            } 
-            fputc('\n', stderr);
-#endif
+#pragma GCC diagnostic pop    
         }
     }
 }

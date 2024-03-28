@@ -10,7 +10,7 @@
 static inline unsigned mf_calculate_point_counter(float x_0, float y_0);
 
 void mf_calculate(unsigned width, unsigned height, unsigned* counters,
-                     float x_offset, float y_offset, float scale)
+                  float x_offset, float y_offset, float scale)
 {
     assert(width && height && counters != nullptr);
      

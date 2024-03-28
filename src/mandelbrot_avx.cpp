@@ -15,14 +15,6 @@
 
 #include "config.h"
 
-// #define DEBUG
-
-#ifdef DEBUG
-#define ON_DEBUG(x) x
-#else
-#define ON_DEBUG(x) 
-#endif
-
 const __m256 vector_x_offsets = _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0) 
                                     * mf_pixel_width;
 const __m256 max_r2_vector = _mm256_set1_ps(mf_max_r2);
@@ -30,7 +22,7 @@ const __m256 max_r2_vector = _mm256_set1_ps(mf_max_r2);
 static inline __m256i calculate_counters_vector(__m256 x_0, __m256 y_0);
 
 void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
-                      float x_offset, float y_offset, float scale)
+                      MfPlotParams params)
 {
     assert(width && height && counters != nullptr);
     assert((uintptr_t)counters % 32 == 0 && "Wrong alignment");
@@ -38,10 +30,10 @@ void mf_calculate_avx(unsigned width, unsigned height, unsigned* counters,
     for (unsigned y = 0; y < height; ++y) {
         for (unsigned x = 0; x < width; x += 8) {
             __m256 x_0 = _mm256_set1_ps(((float)x * mf_pixel_width 
-                                            - x_offset) * scale);
-            x_0 += vector_x_offsets * scale;
+                - params.x_offset) * params.scale);
+            x_0 += vector_x_offsets * params.scale;
             __m256 y_0 = _mm256_set1_ps(((float)y * mf_pixel_width
-                                            - y_offset) * scale);
+                - params.y_offset) * params.scale);
             
             // Here right alignment is guaranteed by assert.
 #pragma GCC diagnostic push

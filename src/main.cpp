@@ -64,9 +64,12 @@ static inline int mf_run_normal()
     }
     
     SfmlGui plot = {};
-    SfmlGuiText text = {.font_name = "Monospace",
-                        .color = sf::Color::Green,
-                        .font_size = 20};
+    SfmlGuiText text = {
+        .font_name = "Monospace",
+        .color = sf::Color::Green,
+        .font_size = 20
+    };
+
     if (!sfml_gui_create(&plot, "Mandelbrot set", mf_screen_width, 
                          mf_screen_height, text))    
         return EXIT_FAILURE;

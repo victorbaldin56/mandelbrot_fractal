@@ -13,7 +13,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
-#include "config.h"
+#include "common.h"
 
 /**
  * @brief
@@ -23,6 +23,6 @@
  * @param counters
  */
 void mf_calculate(unsigned width, unsigned height, unsigned* counters,
-                  float x_offset, float y_offset, float scale);
+                  MfPlotParams params);
 
 #endif // MANDELBROT_H_

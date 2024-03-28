@@ -7,23 +7,25 @@
 
 #include "mandelbrot_dumb.h"
 
-static inline unsigned mf_calculate_point_counter(float x_0, float y_0);
+inline unsigned mf_calculate_point_counter(float x_0, float y_0);
 
 void mf_calculate(unsigned width, unsigned height, unsigned* counters,
-                  float x_offset, float y_offset, float scale)
+                  MfPlotParams params)
 {
     assert(width && height && counters != nullptr);
      
     for (unsigned y = 0; y < height; ++y) {
         for (unsigned x = 0; x < width; ++x) {
-            float x_0 = ((float)x * mf_pixel_width - x_offset) * scale;
-            float y_0 = ((float)y * mf_pixel_width - y_offset) * scale;
+            float x_0 = ((float)x * mf_pixel_width - params.x_offset) 
+                * params.scale;
+            float y_0 = ((float)y * mf_pixel_width - params.y_offset) 
+                * params.scale;
             counters[y * width + x] = mf_calculate_point_counter(x_0, y_0);
         }
     }
 }
 
-static inline unsigned mf_calculate_point_counter(float x_0, float y_0)
+inline unsigned mf_calculate_point_counter(float x_0, float y_0)
 {
     unsigned counter = 0;
     float x_cur = x_0, y_cur = y_0;

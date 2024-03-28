@@ -7,12 +7,12 @@
 
 #include "performance_test.h"
 
+#include <inttypes.h>
+
 #include <immintrin.h>
 
 #include "mandelbrot_dumb.h"
 #include "mandelbrot_avx.h"
-
-typedef unsigned long long ull;
 
 /**
  * @brief Runs one test of both implementations.
@@ -64,21 +64,23 @@ static void mf_run_single_test(FILE* output, unsigned num_iters,
 {
     assert(output != nullptr);
     
-    ull start = __rdtsc();
+    MfPlotParams params = {};
+        
+    uint64_t start = __rdtsc();
     for (unsigned i = 0; i < num_iters; ++i) {
         mf_calculate(mf_screen_width, mf_screen_height, counters,
-                     mf_x_offset, mf_y_offset, 1.f);
+                     params);
     }
-    ull end = __rdtsc();
+    uint64_t end = __rdtsc();
     
-    fprintf(output, "%u,%llu,", num_iters, end - start);
+    fprintf(output, "%u,%" PRIu64 ",", num_iters, end - start);
     
     start = __rdtsc();
     for (unsigned i = 0; i < num_iters; ++i) {
         mf_calculate_avx(mf_screen_width, mf_screen_height, counters,
-                         mf_x_offset, mf_y_offset, 1.f);
+                         params);
     }
     end = __rdtsc();
     
-    fprintf(output, "%llu\n", end - start);
+    fprintf(output, "%" PRIu64 "\n", end - start);
 } 

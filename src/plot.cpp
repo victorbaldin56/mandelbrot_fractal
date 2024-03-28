@@ -11,6 +11,9 @@
 #include <sys/time.h>
 
 static void mf_to_colors(SfmlGui* plot, const unsigned* counters);
+inline void mf_apply_zoom(float* x_offset, float* y_offset, float* scale, 
+                          bool increase);
+inline void mf_reset_zoom(float* x_offset, float* y_offset, float* scale); 
 
 static void mf_render(SfmlGui* plot, unsigned* counters,
                          float x_offset, float y_offset, float scale)
@@ -60,12 +63,16 @@ render:
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Equal) 
             && sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
             || sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-            scale /= mf_scale_step;
+            mf_apply_zoom(&x_offset, &y_offset, &scale, true);
             goto render;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Hyphen) 
             || sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-            scale *= mf_scale_step;
+            mf_apply_zoom(&x_offset, &y_offset, &scale, false);
+            goto render;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5)) {
+            mf_reset_zoom(&x_offset, &y_offset, &scale);
             goto render;
         }
         
@@ -82,6 +89,31 @@ render:
             }
         }
     }
+}
+
+inline void mf_reset_zoom(float *x_offset, float* y_offset, float* scale)
+{
+    assert(x_offset != nullptr && y_offset != nullptr && scale != nullptr);
+    *x_offset = mf_x_offset;
+    *y_offset = mf_y_offset;
+    *scale    = 1.f;
+}
+
+inline void mf_apply_zoom(float* x_offset, float* y_offset, float* scale, 
+                          bool increase)
+{
+    assert(x_offset != nullptr && y_offset != nullptr && scale != nullptr);
+    
+    float new_scale = 0;
+    
+    if (increase)
+        new_scale = *scale / mf_scale_step;
+    else
+        new_scale = *scale * mf_scale_step;
+    
+    *x_offset += (*scale - new_scale) * *x_offset;
+    *y_offset += (*scale - new_scale) * *y_offset;
+    *scale = new_scale;
 }
 
 void mf_draw_plot(SfmlGui* plot, const unsigned* counters)
@@ -102,8 +134,8 @@ static void mf_to_colors(SfmlGui* plot, const unsigned* counters)
     
     for (size_t i = 0; i < plot->width * plot->height; ++i) {
         ((RgbaPixel*)plot->colors)[i] = {.red   = (uint8_t)(counters[i] * red_coeff % 256),
-                                     .green = (uint8_t)(counters[i] * green_coeff % 256),
-                                     .blue  = (uint8_t)(counters[i] * blue_coeff % 256),
-                                     .alpha = 0xff};
+                                         .green = (uint8_t)(counters[i] * green_coeff % 256),
+                                         .blue  = (uint8_t)(counters[i] * blue_coeff % 256),
+                                         .alpha = 0xff};
     }
 }

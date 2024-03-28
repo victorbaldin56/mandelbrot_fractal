@@ -23,6 +23,6 @@
  * @param counters
  */
 void mf_calculate(unsigned width, unsigned height, unsigned* counters,
-                     float x_offset, float y_offset, float scale);
+                  float x_offset, float y_offset, float scale);
 
 #endif // MANDELBROT_H_

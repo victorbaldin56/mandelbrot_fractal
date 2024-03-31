@@ -15,10 +15,6 @@
 
 #include "../sfml_wrapper/sfml_wrapper.h"
 
-const uint8_t red_coeff   = 15;
-const uint8_t green_coeff = 30;
-const uint8_t blue_coeff  = 40;
-
 /**
  * @brief
  * 
@@ -27,7 +23,12 @@ const uint8_t blue_coeff  = 40;
  */
 void mf_draw_plot(SfmlGui* plot, const unsigned* counters);
 
-
+/**
+ * @brief Draws a window inside the loop and handles window events.
+ * 
+ * @param plot Window entities to draw.
+ * @param counters An array with each point's counter.
+ */
 void mf_handle_window(SfmlGui* plot, unsigned* counters);
 
 #endif // MANDELBROT_PLOT_H_

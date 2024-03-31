@@ -26,13 +26,40 @@ $\forall n \in\{0, 1, ...\} \ | z_n | < R$.
 значений размера 8, 16, 32 или 64 бита либо вектор значений с плавающей точкой 
 одинарной или двойной точности.
 
-## Реализация
-[//]: <TODO: вынести в таблицу>
-Эксперимент будем выполнять на ноутбуке c процессором Intel Core i5-8400H Kaby Lake
-и операционной системой Debian GNU/Linux.
-Данный процессор поддерживает AVX2, что подразумевает максимальный размер векторных
-регистров 256 бит.
+## Оборудование
+### Минимальные требования
+Для успешного повторения эксперимента с данной программой требуется компьютер со следующей
+конфигурацией:
+| Характеристика | Требования |
+|:---------:|:--------------:|
+| Процессор | Архитектура x86-64, поддержка AVX2 |
+| ОС        | Linux 64 bit   |
+| Установленное ПО | Git, компилятор C++, система сборки, CMake |
+| Установленное библиотеки | SFML, Fontconfig |
 
+Корректная сборка и работа на конфигурациях, не соответствующих данным требованиям, не
+гарантируется.
+
+### Референсная система
+Данная работа была выполнена на ноутбуке с процессором Intel Core i5-8400H Kaby Lake.
+
+## Сборка
+Для сборки данной программы с целью повторения эксперимента нужно:
+1. Клонировать данный репозиторий вместе с подмодулями:
+```
+git clone https://github.com/victorbaldin56/mandelbrot_fractal --recursive
+cd mandelbrot_fractal
+```
+2. Сконфигурировать проект при помощи CMake. Для версии `Release` через интерфейс командной
+строки:
+```
+mkdir Release && cd Release
+cmake .. -G <your build system> -DCMAKE_BUILD_TYPE=Release
+```
+3. Собрать проект при помощи любой доступной системы сборки.
+
+
+## Реализация
 ### Рендер 
 Для использования возможностей AVX-инструкций можно применять
 соответвующие ассемблерные инструкции. Однако в нашем распоряжении есть компилятор
@@ -112,12 +139,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
+from tabulate import tabulate
 matplotlib.backend_bases.register_backend('pdf', FigureCanvasPgf)
+from IPython.display import display_markdown
 
 matplotlib.rcParams.update({
     "pgf.texsystem": "pdflatex",
     'font.family': 'serif',
-    'figure.dpi': 100,
+    'figure.dpi': 150,
     'text.usetex': True,
     'pgf.rcfonts': False,
 })
@@ -128,11 +157,11 @@ def read_files(files):
         ret += [pd.read_csv(f)]
     return ret
 
-def linear_plot(df, title, filename):
+def main(df, title, filename, table):
     colors = ['red', 'green']
     labels = ['Dumb', 'AVX2']
-    print(title)
-    
+    table[title] = []
+     
     plt.figure(figsize=(7, 4))
     
     coeffs = [] 
@@ -143,16 +172,16 @@ def linear_plot(df, title, filename):
         diag = np.diag(cov)
         diag = np.sqrt(diag)
         epsilon = diag[0] / a
-        print(f'{labels[i]}: a = {a:.0f}, sigma = {diag[0]:.0f}, '
-              f'epsilon = {epsilon:.3e}')
+        
         coeffs.append([a, epsilon])
-
+        table[title].append(f'{a / 1e5 :.0f} ± {diag[0] / 1e5 :.0f}')
+        
         z = np.linspace(0, max(df['N']), 1000)
         plt.plot(z, a * z + b, color=colors[i], label=labels[i])
     
-    print(f'alpha = {coeffs[0][0] / coeffs[1][0]:.3f}, '
-          f'epsilon = {np.sqrt(coeffs[0][1]**2 + coeffs[1][1]**2):.3e}')
-              
+    alpha = coeffs[0][0] / coeffs[1][0]
+    table[title].append(f'{alpha : .3f} ± {alpha * np.sqrt(coeffs[0][1]**2 + coeffs[1][1]**2) :.3f}')
+          
     plt.title(title)     
     plt.grid(linestyle='--')
     plt.legend()
@@ -163,20 +192,29 @@ def linear_plot(df, title, filename):
 dfs = read_files(['data/no_optimization.csv', 'data/with_optimization.csv'])
 titles = ['No optimization', 'With optimization']
 filenames = ['no_optimization.pdf', 'with_optimization.pdf']
+table = {
+    '': ['Dumb', 'AVX2', 'Acceleration'],
+}
 
 for i in range(dfs.__len__()):
-    linear_plot(dfs[i], titles[i], filenames[i])
+    main(dfs[i], titles[i], filenames[i], table)
+
+temp_html = tabulate(table, headers='keys', tablefmt='html', stralign='center')
+display_markdown(temp_html, raw=True)
  
 ```
 
-    No optimization
-    Dumb: a = 1144651628, sigma = 502975, epsilon = 4.394e-04
-    AVX2: a = 182956319, sigma = 135361, epsilon = 7.399e-04
-    alpha = 6.256, epsilon = 8.605e-04
-    With optimization
-    Dumb: a = 502254475, sigma = 265024, epsilon = 5.277e-04
-    AVX2: a = 67885076, sigma = 28952, epsilon = 4.265e-04
-    alpha = 7.399, epsilon = 6.785e-04
+
+<table>
+<thead>
+<tr><th style="text-align: center;">            </th><th style="text-align: center;"> No optimization </th><th style="text-align: center;"> With optimization </th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center;">    Dumb    </td><td style="text-align: center;">    11447 ± 5    </td><td style="text-align: center;">     5023 ± 3      </td></tr>
+<tr><td style="text-align: center;">    AVX2    </td><td style="text-align: center;">    1830 ± 1     </td><td style="text-align: center;">      679 ± 0      </td></tr>
+<tr><td style="text-align: center;">Acceleration</td><td style="text-align: center;">  6.256 ± 0.005  </td><td style="text-align: center;">   7.399 ± 0.005   </td></tr>
+</tbody>
+</table>
 
 
 

@@ -12,6 +12,7 @@
 build/
 Debug/
 Release/
+html/
 
 # DOS
 *.COM

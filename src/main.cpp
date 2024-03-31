@@ -15,15 +15,18 @@
 #include "plot.h"
 #include "performance_test.h"
 
-const char help_message[] = "Mandelbrot fractal simulation\n"
-                            "Usage:...";
-
-inline void print_help() 
+inline void print_help(const char* const* argv)
 {
-    puts(help_message);
+    printf("Mandelbrot fractal view\n"
+           "Copyright (C) Victor Baldin, 2024\n"
+           "Usage: %s [options]\n"
+           "Options:\n"
+           "    -h, --help                      Print this message and quit\n"
+           "    -t, --test [output file]        Test performance, write measured data to csv output\n",
+           argv[0]);
 }
 
-static inline int mf_run_normal();
+inline int mf_run_normal();
 
 int main(int argc, char** argv) 
 {    
@@ -38,12 +41,12 @@ int main(int argc, char** argv)
         
         switch (option_code) {
         case 'h':
-            print_help();
+            print_help(argv);
             return 0;
         case 't':        
             return mf_run_perfomance_test(optarg);
         case '?':
-            print_help();
+            print_help(argv);
             return EXIT_FAILURE;
         default:
             assert(0 && "Unexpected case");
@@ -53,7 +56,7 @@ int main(int argc, char** argv)
     return mf_run_normal();
 }
 
-static inline int mf_run_normal()
+inline int mf_run_normal()
 {
     unsigned* counters = (unsigned*)aligned_alloc(32, mf_screen_width
                                                     * mf_screen_height

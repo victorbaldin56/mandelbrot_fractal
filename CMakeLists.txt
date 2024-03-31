@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -mavx2 -std=c++17 -Wall -Wextra -Weffc++ -Waggres
                     -Wno-literal-suffix -Wno-missing-field-initializers -Wno-narrowing\
                     -Wno-old-style-cast -Wno-varargs -Wstack-protector -fstrict-overflow\
                     -fno-omit-frame-pointer -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE -D _DEBUG\
-                    -ggdb3") 
+                    -ggdb3 -fsanitize=address,undefined")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -Ofast -march=native -mavx2 -std=c++17 -Wall")
 

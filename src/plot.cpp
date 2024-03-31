@@ -93,8 +93,8 @@ void mf_handle_window(SfmlGui* plot, unsigned* counters)
 inline void mf_print_info(SfmlGui* plot, MfPlotParams params,
                           timeval start, timeval stop)
 {
-    unsigned fps = 1e6 / (1e6 * (stop.tv_sec - start.tv_sec) + (stop.tv_usec
-        - start.tv_usec));
+    unsigned fps = (unsigned)(1e6 / (1e6 * (double)(stop.tv_sec - start.tv_sec)
+        + (double)(stop.tv_usec - start.tv_usec)));
 
     char buf[100] = {};
     sprintf(buf, "FPS: %u\n"

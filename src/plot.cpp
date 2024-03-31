@@ -38,8 +38,6 @@ void mf_handle_window(SfmlGui* plot, unsigned* counters)
             }
         }
 
-        plot->window.clear();
-
         timeval start;
         gettimeofday(&start, nullptr);
 
@@ -76,12 +74,18 @@ void mf_handle_window(SfmlGui* plot, unsigned* counters)
             mf_update_texture(plot, params, counters);
         }
 
+        plot->window.clear();
         plot->window.draw(plot->sprite);
 
         timeval stop;
         gettimeofday(&stop, nullptr);
-        mf_print_info(plot, params, start, stop);
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
+            plot->text.setString(mf_window_help_message);
+        else
+            mf_print_info(plot, params, start, stop);
+
+        plot->window.draw(plot->text);
         plot->window.display();
     }
 }
@@ -96,7 +100,6 @@ inline void mf_print_info(SfmlGui* plot, MfPlotParams params,
     sprintf(buf, "FPS: %u\n"
                  "Scale: %g", fps, 1 / params.scale);
     plot->text.setString(buf);
-    plot->window.draw(plot->text);
 }
 
 inline void mf_apply_zoom(MfPlotParams* params, bool increase)

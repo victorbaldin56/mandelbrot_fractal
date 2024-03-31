@@ -1,7 +1,7 @@
 /******************************************************************************
  * @file
- * @brief Contains key constant values. 
- * 
+ * @brief Contains key constant values.
+ *
  * @copyright (C) Victor Baldin, 2024.
  *****************************************************************************/
 
@@ -31,5 +31,11 @@ const uint8_t mf_red_coeff   = 15;
 const uint8_t mf_green_coeff = 30;
 const uint8_t mf_blue_coeff  = 40;
 
+const char mf_window_help_message[] = "Hotkeys:\n"
+                                      "F5        Reset view\n"
+                                      "+         Zoom in\n"
+                                      "-         Zoom out\n"
+                                      "Arrows    Move left/right, up/down\n"
+                                      "Release F1 to return...\n";
 
 #endif // MANDELBROT_CONFIG_H_

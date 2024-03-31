@@ -17,7 +17,8 @@ inline void mf_update_texture(SfmlGui* plot, MfPlotParams params,
                               unsigned* counters);
 static void mf_to_colors(SfmlGui* plot, const unsigned* counters);
 inline void mf_apply_zoom(MfPlotParams* params, bool increase);
-inline void mf_get_fps(SfmlGui* plot, timeval start, timeval stop);
+inline void mf_print_info(SfmlGui* plot, MfPlotParams params,
+                          timeval start, timeval stop);
 
 void mf_handle_window(SfmlGui* plot, unsigned* counters)
 {   
@@ -77,24 +78,25 @@ void mf_handle_window(SfmlGui* plot, unsigned* counters)
         
         timeval stop;
         gettimeofday(&stop, nullptr);
-        mf_get_fps(plot, start, stop);
+        mf_print_info(plot, params, start, stop);
 
         plot->window.display();
     }
 }
 
-inline void mf_get_fps(SfmlGui* plot, timeval start, timeval stop)
+inline void mf_print_info(SfmlGui* plot, MfPlotParams params, 
+                          timeval start, timeval stop)
 {
     unsigned fps = 1e6 / (1e6 * (stop.tv_sec - start.tv_sec) + (stop.tv_usec
         - start.tv_usec));
     
     char buf[100] = {};
-    sprintf(buf, "FPS: %u", fps);
+    sprintf(buf, "FPS: %u\n"
+                 "Scale: %g", fps, 1 / params.scale);
     plot->text.setString(buf);
     plot->window.draw(plot->text);
 }
 
-// FIXME
 inline void mf_apply_zoom(MfPlotParams* params, bool increase)
 {
     assert(params != nullptr);
@@ -105,9 +107,13 @@ inline void mf_apply_zoom(MfPlotParams* params, bool increase)
         new_scale = params->scale / mf_scale_step;
     else
         new_scale = params->scale * mf_scale_step;
-    
-    params->x_offset += (params->scale - new_scale) * params->x_offset;
-    params->y_offset += (params->scale - new_scale) * params->y_offset;
+        
+    float offset_coeff = (new_scale - params->scale) / new_scale;
+     
+    params->x_offset += offset_coeff * ((float)mf_screen_width * mf_pixel_width / 2
+        - params->x_offset);
+    params->y_offset += offset_coeff * ((float)mf_screen_height * mf_pixel_width / 2
+        - params->y_offset);
     params->scale = new_scale;
 }
 

@@ -193,7 +193,7 @@ dfs = read_files(['data/no_optimization.csv', 'data/with_optimization.csv'])
 titles = ['No optimization', 'With optimization']
 filenames = ['no_optimization.pdf', 'with_optimization.pdf']
 table = {
-    '': ['Dumb', 'AVX2', 'Acceleration'],
+    '': ['Clocks on dumb, 1e5', 'Clocks on AVX2, 1e5', 'Acceleration'],
 }
 
 for i in range(dfs.__len__()):
@@ -207,12 +207,12 @@ display_markdown(temp_html, raw=True)
 
 <table>
 <thead>
-<tr><th style="text-align: center;">            </th><th style="text-align: center;"> No optimization </th><th style="text-align: center;"> With optimization </th></tr>
+<tr><th style="text-align: center;">                   </th><th style="text-align: center;"> No optimization </th><th style="text-align: center;"> With optimization </th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: center;">    Dumb    </td><td style="text-align: center;">    11447 ± 5    </td><td style="text-align: center;">     5023 ± 3      </td></tr>
-<tr><td style="text-align: center;">    AVX2    </td><td style="text-align: center;">    1830 ± 1     </td><td style="text-align: center;">      679 ± 0      </td></tr>
-<tr><td style="text-align: center;">Acceleration</td><td style="text-align: center;">  6.256 ± 0.005  </td><td style="text-align: center;">   7.399 ± 0.005   </td></tr>
+<tr><td style="text-align: center;">Clocks on dumb, 1e5</td><td style="text-align: center;">    11447 ± 5    </td><td style="text-align: center;">     5023 ± 3      </td></tr>
+<tr><td style="text-align: center;">Clocks on AVX2, 1e5</td><td style="text-align: center;">    1830 ± 1     </td><td style="text-align: center;">      679 ± 0      </td></tr>
+<tr><td style="text-align: center;">   Acceleration    </td><td style="text-align: center;">  6.256 ± 0.005  </td><td style="text-align: center;">   7.399 ± 0.005   </td></tr>
 </tbody>
 </table>
 

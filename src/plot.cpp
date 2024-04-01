@@ -25,7 +25,6 @@ void mf_handle_window(SfmlGui* plot, unsigned* counters)
 {
     assert(plot != nullptr && counters != nullptr);
 
-
     MfPlotParams params = {};
     mf_update_texture(plot, params, counters);
 
@@ -127,7 +126,7 @@ inline void mf_update_texture(SfmlGui* plot, MfPlotParams params,
 {
     assert(plot && counters);
 
-    mf_calculate_avx(mf_screen_width, mf_screen_height, counters, params);
+    mf_calculate_avx(plot->width, plot->height, counters, params);
     mf_to_colors(plot, params, counters);
     plot->texture.update(plot->colors);
 }

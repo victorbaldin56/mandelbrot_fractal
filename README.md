@@ -161,34 +161,34 @@ def main(df, title, filename, table):
     colors = ['red', 'green']
     labels = ['Dumb', 'AVX2']
     table[title] = []
-     
+
     plt.figure(figsize=(7, 4))
-    
-    coeffs = [] 
+
+    coeffs = []
     for i in range(labels.__len__()):
-        plt.errorbar(df['N'], df[f'{labels[i]}'], xerr=0, yerr=0, 
+        plt.errorbar(df['N'], df[f'{labels[i]}'], xerr=0, yerr=0,
                      fmt=f'{colors[i][0]}.')
         [a, b], cov = np.polyfit(df['N'], df[labels[i]], deg=1, cov=True)
         diag = np.diag(cov)
         diag = np.sqrt(diag)
         epsilon = diag[0] / a
-        
+
         coeffs.append([a, epsilon])
         table[title].append(f'{a / 1e5 :.0f} ± {diag[0] / 1e5 :.0f}')
-        
+
         z = np.linspace(0, max(df['N']), 1000)
         plt.plot(z, a * z + b, color=colors[i], label=labels[i])
-    
+
     alpha = coeffs[0][0] / coeffs[1][0]
     table[title].append(f'{alpha : .3f} ± {alpha * np.sqrt(coeffs[0][1]**2 + coeffs[1][1]**2) :.3f}')
-          
-    plt.title(title)     
+
+    plt.title(title)
     plt.grid(linestyle='--')
     plt.legend()
     plt.xlabel('Iterations')
     plt.ylabel('TSC Clocks')
     plt.savefig(f'pictures/{filename}')
-    
+
 dfs = read_files(['data/no_optimization.csv', 'data/with_optimization.csv'])
 titles = ['No optimization', 'With optimization']
 filenames = ['no_optimization.pdf', 'with_optimization.pdf']
@@ -201,7 +201,7 @@ for i in range(dfs.__len__()):
 
 temp_html = tabulate(table, headers='keys', tablefmt='html', stralign='center')
 display_markdown(temp_html, raw=True)
- 
+
 ```
 
 
@@ -240,6 +240,8 @@ $\varepsilon \sim 10^{-4}$. Это позволяет говорить, что �
 [godbolt](godbolt.org). Сначала расммотрим наивную имплементацию:
 https://godbolt.org/z/3nWPh84zY.
 
+![image](pictures/godbolt_dumb.png)
+
 При самом поверхностном рассмотрении можно заметить, что ключевое
 слово `inline`, указанное для функции `mf_calculate_point_counter()` сработало
 лишь с оптимизацией. Основной используемый флаг: `-Ofast -march=x86-64-v3`.
@@ -249,6 +251,8 @@ https://godbolt.org/z/3nWPh84zY.
 
 Похожим образом сработали оптимизации и в векторной реализации:
 https://godbolt.org/z/a66M17961.
+
+![image](pictures/godbolt_avx1.png)
 
 ## Вывод
 Как видно из результатов работы, оптимизации компилятора не смогли 

@@ -89,7 +89,10 @@ A = 0xff
 ```
 При `R_COEFF = 15`, `G_COEFF = 30`, `B_COEFF = 40` и размерах
 окна $1024 \times 1024$ получим следующую картинку:
-![image](./pictures/mand.png)
+<p float="left">
+    <img src="./pictures/mand.png" alt="drawing" width="800"/>
+</p>
+
 
 ### Измерение производительности
 Итак, у нас есть 2 разных имплементации для вычисления $N(z)$: наивная 
